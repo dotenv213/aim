@@ -12,6 +12,12 @@ services:
     volumes:
       - auth_db_data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   # 2. Auth Service (Go App)
   auth-service:
     build:
@@ -27,7 +33,8 @@ services:
       DB_NAME: auth_db
       DB_PORT: 5432
     depends_on:
-      - auth-db
+      auth-db:
+        condition: service_healthy
 
 volumes:
   auth_db_data:
