@@ -1,5 +1,7 @@
 services:
-  # 1. Postgres Database
+  # ------------------------------------
+  # 1. Auth Service Database
+  # ------------------------------------
   auth-db:
     image: postgres:15-alpine
     container_name: aim_auth_db
@@ -11,14 +13,15 @@ services:
       - "5432:5432"
     volumes:
       - auth_db_data:/var/lib/postgresql/data
-
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d auth_db"]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  # ------------------------------------
   # 2. Auth Service (Go App)
+  # ------------------------------------
   auth-service:
     build:
       context: ./auth-service 
@@ -32,9 +35,55 @@ services:
       DB_PASSWORD: password
       DB_NAME: auth_db
       DB_PORT: 5432
+      JWT_SECRET: "my_super_secret_key_123"
     depends_on:
       auth-db:
         condition: service_healthy
 
+  # ------------------------------------
+  # 3. Account Service Database
+  # ------------------------------------
+  account-db:
+    image: postgres:15-alpine
+    container_name: aim_account_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: account_db
+    ports:
+      - "5433:5432" 
+    volumes:
+      - account_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d account_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ------------------------------------
+  # 4. Account Service (Go App)
+  # ------------------------------------
+  account-service:
+    build:
+      context: ./account-service
+      dockerfile: Dockerfile
+    container_name: aim_account_service
+    ports:
+      - "8081:8081" 
+    environment:
+      DB_HOST: account-db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: account_db
+      DB_PORT: 5432
+      JWT_SECRET: "my_super_secret_key_123" 
+    depends_on:
+      account-db:
+        condition: service_healthy
+
+# ------------------------------------
+# Volumes Definition 
+# ------------------------------------
 volumes:
   auth_db_data:
+  account_db_data:
