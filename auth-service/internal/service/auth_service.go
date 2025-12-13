@@ -50,11 +50,11 @@ func (s *authService) Register(email string, password string) (*domain.User, err
 func (s *authService) Login(email string, password string) (string, error) {
 	user, err := s.userRepo.GetByEmail(email)
 	if err != nil {
-		return "", errors.New("invalid credentials") // ایمیل غلط
+		return "", errors.New("invalid credentials") 
 	}
 
 	if !utils.CheckPasswordHash(password, user.Password) {
-		return "", errors.New("invalid credentials") // پسورد غلط
+		return "", errors.New("invalid credentials") 
 	}
 
 	token, err := s.generateJWT(user.ID)
