@@ -81,9 +81,50 @@ services:
       account-db:
         condition: service_healthy
 
+# 5. Transaction Service Database
+  transaction-db:
+    image: postgres:15-alpine
+    container_name: aim_transaction_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: transaction_db
+    ports:
+      - "5434:5432" 
+    volumes:
+      - transaction_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d transaction_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 6. Transaction Service
+  transaction-service:
+    build:
+      context: ./transaction-service
+      dockerfile: Dockerfile
+    container_name: aim_transaction_service
+    ports:
+      - "8082:8080" # inside 8080 outside 8082
+    environment:
+      DB_HOST: transaction-db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: transaction_db
+      DB_PORT: 5432
+      JWT_SECRET: "my_super_secret_key_123"
+      ACCOUNT_SERVICE_URL: "aim_account_service:50051" 
+    depends_on:
+      transaction-db:
+        condition: service_healthy
+      account-service: 
+        condition: service_started
+
 # ------------------------------------
 # Volumes Definition 
 # ------------------------------------
 volumes:
   auth_db_data:
   account_db_data:
+  transaction_db_data:
