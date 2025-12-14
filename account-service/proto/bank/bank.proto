@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package bank;
+
+option go_package = "github.com/dotenv213/aim/account-service/proto/bank";
+
+service BankService {
+  rpc GetBankAccount (GetBankAccountRequest) returns (GetBankAccountResponse);
+  
+}
+
+message GetBankAccountRequest {
+  uint64 bank_id = 1;
+  uint64 user_id = 2; 
+}
+
+message GetBankAccountResponse {
+  uint64 id = 1;
+  double balance = 2;
+  string owner_name = 3;
+}

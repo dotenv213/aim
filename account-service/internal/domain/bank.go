@@ -20,4 +20,5 @@ type BankRepository interface {
 type BankService interface {
 	CreateBank(userID uint, name string, initialBalance float64) (*Bank, error)
 	GetUserBanks(userID uint) ([]Bank, error)
+	GetBankByID(id uint) (*Bank, error)
 }

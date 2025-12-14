@@ -26,3 +26,7 @@ func (s *bankService) CreateBank(userID uint, name string, initialBalance float6
 func (s *bankService) GetUserBanks(userID uint) ([]domain.Bank, error) {
 	return s.repo.GetAllByUserID(userID)
 }
+
+func (s *bankService) GetBankByID(id uint) (*domain.Bank, error) {
+	return s.repo.GetByID(id)
+}
