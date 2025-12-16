@@ -19,7 +19,7 @@ func NewAuthService(repo domain.UserRepository, secret string) domain.AuthServic
 	return &authService{
 		userRepo:      repo,
 		jwtSecret:     []byte(secret),
-		tokenDuration: time.Hour * 72, 
+		tokenDuration: time.Hour * 72,
 	}
 }
 
@@ -50,11 +50,11 @@ func (s *authService) Register(email string, password string) (*domain.User, err
 func (s *authService) Login(email string, password string) (string, error) {
 	user, err := s.userRepo.GetByEmail(email)
 	if err != nil {
-		return "", errors.New("invalid credentials") 
+		return "", errors.New("invalid credentials")
 	}
 
 	if !utils.CheckPasswordHash(password, user.Password) {
-		return "", errors.New("invalid credentials") 
+		return "", errors.New("invalid credentials")
 	}
 
 	token, err := s.generateJWT(user.ID)

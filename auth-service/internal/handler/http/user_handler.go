@@ -8,7 +8,7 @@ import (
 )
 
 type UserHandler struct {
-	AuthService domain.AuthService 
+	AuthService domain.AuthService
 }
 
 func NewUserHandler(authService domain.AuthService) *UserHandler {
@@ -19,7 +19,7 @@ func NewUserHandler(authService domain.AuthService) *UserHandler {
 
 func (h *UserHandler) RegisterHandler(c *fiber.Ctx) error {
 	var req RegisterRequest
-	
+
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid request body",
@@ -41,7 +41,7 @@ func (h *UserHandler) RegisterHandler(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
 		"message": "ثبت نام با موفقیت انجام شد.",
 		"user_id": user.ID,
-		"email": user.Email,
+		"email":   user.Email,
 	})
 }
 
@@ -62,6 +62,6 @@ func (h *UserHandler) LoginHandler(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "ورود موفقیت آمیز بود.",
-		"token": token,
+		"token":   token,
 	})
 }

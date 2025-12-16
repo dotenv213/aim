@@ -27,10 +27,10 @@ func main() {
 	}
 
 	//Dependency Injection
-	// connect repository to db 
+	// connect repository to db
 	userRepo := repository.NewUserRepository(db)
 
-	// service 
+	// service
 	authService := service.NewAuthService(userRepo, cfg.JWTSecret)
 
 	// handler connect to service
@@ -38,7 +38,7 @@ func main() {
 
 	// routes
 	app := fiber.New()
-	
+
 	app.Use(logger.New())
 
 	api := app.Group("/api/v1")
