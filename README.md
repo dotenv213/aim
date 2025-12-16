@@ -26,31 +26,51 @@ This system follows a distributed architecture where the Transaction Service act
 
 ```mermaid
 graph TD
-    User[Client / User] -->|HTTP| Auth[Auth Service :8080]
-    User -->|HTTP| Acc[Account Service :8081]
-    User -->|HTTP| Trx[Transaction Service :8082]
+    User([Client / User])
     
-    subgraph Databases
+    subgraph Services
+        Auth[Auth Service :8080]
+        Acc[Account Service :8081]
+        Trx[Transaction Service :8082]
+    end
+
+    subgraph Infrastructure
+        Rabbit{RabbitMQ}
         DB1[(Auth DB)]
         DB2[(Account DB)]
         DB3[(Transaction DB)]
     end
 
-    Auth --> DB1
-    Acc --> DB2
-    Trx --> DB3
+    %% Client Requests
+    User -->|HTTP| Auth
+    User -->|HTTP| Acc
+    User -->|HTTP| Trx
+    
+    %% Database Connections
+    Auth --- DB1
+    Acc --- DB2
+    Trx --- DB3
 
-    %% Communications
-    Trx -- gRPC Check Balance --> Acc
-    Trx -- Publish Event --> Rabbit{RabbitMQ}
+    %% Service Communications
+    Trx -.->|gRPC Check Balance| Acc
+    Trx -- Publish Event --> Rabbit
     Rabbit -- Consume Event --> Acc
+
+    %% Styling
+    classDef service fill:#f9f,stroke:#333,stroke-width:2px,color:black;
+    classDef db fill:#ffcc00,stroke:#333,stroke-width:2px,color:black;
+    classDef infra fill:#00ccff,stroke:#333,stroke-width:2px,color:black;
+    
+    class Auth,Acc,Trx service;
+    class DB1,DB2,DB3 db;
+    class Rabbit infra;
 ```
 
 ## 📦 How to Run
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/dotenv213/aim.git](https://github.com/dotenv213/aim.git)
+    git clone https://github.com/dotenv213/aim.git
     cd aim
     ```
 
