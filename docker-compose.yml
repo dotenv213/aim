@@ -64,6 +64,7 @@ services:
   # 4. Account Service (Go App)
   # ------------------------------------
   account-service:
+    restart: on-failure
     build:
       context: ./account-service
       dockerfile: Dockerfile
@@ -101,6 +102,7 @@ services:
 
   # 6. Transaction Service
   transaction-service:
+    restart: on-failure
     build:
       context: ./transaction-service
       dockerfile: Dockerfile
@@ -115,11 +117,32 @@ services:
       DB_PORT: 5432
       JWT_SECRET: "my_super_secret_key_123"
       ACCOUNT_SERVICE_URL: "aim_account_service:50051" 
+      RABBITMQ_URL: "amqp://user:password@rabbitmq:5672/"
     depends_on:
       transaction-db:
         condition: service_healthy
       account-service: 
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+# 7. RabbitMQ (Message Broker)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine 
+    container_name: aim_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672" 
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default 
 
 # ------------------------------------
 # Volumes Definition 

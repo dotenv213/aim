@@ -28,3 +28,7 @@ func (r *bankRepo) GetByID(id uint) (*domain.Bank, error) {
 	err := r.db.First(&bank, id).Error
 	return &bank, err
 }
+
+func (r *bankRepo) Update(bank *domain.Bank) error {
+	return r.db.Save(bank).Error
+}

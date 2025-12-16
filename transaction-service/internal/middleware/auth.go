@@ -38,7 +38,7 @@ func AuthMiddleware(secret string) fiber.Handler {
 			})
 		}
 
-		userID := uint(claims["user_id"].(float64)) 
+		userID := uint(claims["user_id"].(float64))
 		c.Locals("user_id", userID)
 
 		return c.Next()

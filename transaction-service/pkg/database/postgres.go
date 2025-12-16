@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"log"
-	"time" 
+	"time"
 
 	"github.com/dotenv213/aim/transaction-service/pkg/config"
 	"gorm.io/driver/postgres"
@@ -27,13 +27,13 @@ func ConnectDB(cfg *config.Config) *gorm.DB {
 			return db
 		}
 
-		if counts > 10 { 
+		if counts > 10 {
 			log.Println(err)
 			log.Fatalf("Could not connect to the database after multiple retries")
 		}
 
 		log.Println("Backing off for two seconds...")
-		time.Sleep(2 * time.Second) 
+		time.Sleep(2 * time.Second)
 		continue
 	}
 }

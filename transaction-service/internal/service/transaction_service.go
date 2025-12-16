@@ -8,20 +8,22 @@ import (
 
 	"github.com/dotenv213/aim/transaction-service/internal/domain"
 	grpcClient "github.com/dotenv213/aim/transaction-service/pkg/client/grpc"
+	"github.com/dotenv213/aim/transaction-service/pkg/rabbitmq"
 )
 
 type transactionService struct {
 	repo          domain.TransactionRepository
 	accountClient *grpcClient.AccountClient
+	producer      *rabbitmq.RabbitMQProducer
 }
 
-func NewTransactionService(repo domain.TransactionRepository, accClient *grpcClient.AccountClient) domain.TransactionService {
+func NewTransactionService(repo domain.TransactionRepository, accClient *grpcClient.AccountClient, producer *rabbitmq.RabbitMQProducer) domain.TransactionService {
 	return &transactionService{
 		repo:          repo,
 		accountClient: accClient,
+		producer:      producer,
 	}
 }
-
 
 func (s *transactionService) CreateTransaction(userID uint, bankID uint, amount float64, typeCode string, categoryID uint, desc string, contactID *uint) (*domain.Transaction, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -63,13 +65,23 @@ func (s *transactionService) CreateTransaction(userID uint, bankID uint, amount 
 	}
 
 	err = s.repo.Create(trx)
-	return trx, err
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		pubErr := s.producer.PublishBalanceUpdate(trx.BankID, trx.Amount, trxType.Code)
+		if pubErr != nil {
+			fmt.Printf("FAILED to publish event: %v\n", pubErr)
+		}
+	}()
+
+	return trx, nil
 }
 
 func (s *transactionService) GetUserTransactions(userID uint) ([]domain.Transaction, error) {
 	return s.repo.GetByUserID(userID)
 }
-
 
 func (s *transactionService) CreateContact(userID uint, name, phone string) (*domain.Contact, error) {
 	c := &domain.Contact{

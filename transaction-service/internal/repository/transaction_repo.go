@@ -13,7 +13,6 @@ func NewTransactionRepository(db *gorm.DB) domain.TransactionRepository {
 	return &transactionRepo{db: db}
 }
 
-
 func (r *transactionRepo) Create(trx *domain.Transaction) error {
 	return r.db.Create(trx).Error
 }
@@ -38,7 +37,6 @@ func (r *transactionRepo) GetCategoryByID(id uint) (*domain.Category, error) {
 	err := r.db.First(&c, id).Error
 	return &c, err
 }
-
 
 func (r *transactionRepo) CreateContact(contact *domain.Contact) error {
 	return r.db.Create(contact).Error

@@ -10,10 +10,10 @@ import (
 type CreateTransactionRequest struct {
 	BankID      uint    `json:"bank_id"`
 	Amount      float64 `json:"amount"`
-	TypeCode    string  `json:"type_code"` 
+	TypeCode    string  `json:"type_code"`
 	CategoryID  uint    `json:"category_id"`
 	Description string  `json:"description"`
-	ContactID   *uint   `json:"contact_id"` 
+	ContactID   *uint   `json:"contact_id"`
 }
 
 type TransactionHandler struct {
@@ -25,7 +25,7 @@ func NewTransactionHandler(service domain.TransactionService) *TransactionHandle
 }
 
 func (h *TransactionHandler) CreateHandler(c *fiber.Ctx) error {
-	userID := c.Locals("user_id").(uint) 
+	userID := c.Locals("user_id").(uint)
 
 	var req CreateTransactionRequest
 	if err := c.BodyParser(&req); err != nil {
@@ -39,7 +39,7 @@ func (h *TransactionHandler) CreateHandler(c *fiber.Ctx) error {
 		req.TypeCode,
 		req.CategoryID,
 		req.Description,
-		req.ContactID, 
+		req.ContactID,
 	)
 
 	if err != nil {
@@ -50,7 +50,7 @@ func (h *TransactionHandler) CreateHandler(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
-		"message": "Transaction created successfully",
+		"message":     "Transaction created successfully",
 		"transaction": trx,
 	})
 }
@@ -69,21 +69,21 @@ func (h *TransactionHandler) GetListHandler(c *fiber.Ctx) error {
 }
 
 type CreateContactRequest struct {
-    Name  string `json:"name"`
-    Phone string `json:"phone"`
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
 }
 
 func (h *TransactionHandler) CreateContactHandler(c *fiber.Ctx) error {
-    userID := c.Locals("user_id").(uint)
-    var req CreateContactRequest
-    if err := c.BodyParser(&req); err != nil {
-        return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid body"})
-    }
-    
-    contact, err := h.service.CreateContact(userID, req.Name, req.Phone)
-    if err != nil {
-         return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": "Failed"})
-    }
-    
-    return c.Status(http.StatusCreated).JSON(contact)
+	userID := c.Locals("user_id").(uint)
+	var req CreateContactRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid body"})
+	}
+
+	contact, err := h.service.CreateContact(userID, req.Name, req.Phone)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": "Failed"})
+	}
+
+	return c.Status(http.StatusCreated).JSON(contact)
 }

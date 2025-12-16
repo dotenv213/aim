@@ -10,30 +10,31 @@ import (
 func SeedDatabase(db *gorm.DB) {
 	var count int64
 	db.Model(&domain.TransactionType{}).Count(&count)
-	
+
 	if count > 0 {
 		log.Println("Database already seeded.")
 		return
 	}
 
-	log.Println("Seeding database with default types and categories...")
+	log.Println("Seeding database with default categories...")
 
-	income := domain.TransactionType{Title: "Income", Code: "INC"}
-	expense := domain.TransactionType{Title: "Expense", Code: "EXP"}
+	deposit := domain.TransactionType{Title: "واریز", Code: "deposit"}
+	withdraw := domain.TransactionType{Title: "برداشت", Code: "withdraw"}
 
-	db.Create(&income)
-	db.Create(&expense)
+	db.Create(&deposit)
+	db.Create(&withdraw)
 
 	categories := []domain.Category{
-		{Title: "Salary", TransactionTypeID: income.ID},
-		{Title: "Gift", TransactionTypeID: income.ID},
-		
-		{Title: "Food & Dining", TransactionTypeID: expense.ID},
-		{Title: "Rent", TransactionTypeID: expense.ID},
-		{Title: "Transportation", TransactionTypeID: expense.ID},
-		{Title: "Shopping", TransactionTypeID: expense.ID},
+		{Title: "دریافت قرض / وام", TransactionTypeID: deposit.ID}, // ID: 1
+		{Title: "تسویه با بدهکار", TransactionTypeID: deposit.ID},  // ID: 2
+		{Title: "سایر واریزها", TransactionTypeID: deposit.ID},     // ID: 3
+
+		{Title: "اعطای قرض / وام به شخص", TransactionTypeID: withdraw.ID}, // ID: 4
+		{Title: "تسویه با بستانکار", TransactionTypeID: withdraw.ID},      // ID: 5
+		{Title: "هزینه خوراک", TransactionTypeID: withdraw.ID},            // ID: 6
+		{Title: "سایر برداشت‌ها", TransactionTypeID: withdraw.ID},         // ID: 7
 	}
 
 	db.Create(&categories)
-	log.Println("Database seeding completed!")
+	log.Println("Database seeding completed successfully!")
 }

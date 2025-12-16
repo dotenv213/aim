@@ -4,8 +4,8 @@ import "time"
 
 type TransactionType struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
-	Title     string    `gorm:"not null" json:"title"` 
-	Code      string    `gorm:"unique;not null" json:"code"`  
+	Title     string    `gorm:"not null" json:"title"`
+	Code      string    `gorm:"unique;not null" json:"code"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -26,22 +26,22 @@ type Contact struct {
 }
 
 type Transaction struct {
-	ID          uint      `gorm:"primaryKey" json:"id"`
-	UserID      uint      `gorm:"index;not null" json:"user_id"`
-	BankID      uint      `gorm:"index;not null" json:"bank_id"`
-	Amount      float64   `gorm:"not null" json:"amount"`
-	Description string    `json:"description"`
-	
-	TypeID     uint            `gorm:"not null" json:"type_id"`
-	Type       TransactionType `gorm:"foreignKey:TypeID" json:"type"`
-	
+	ID          uint    `gorm:"primaryKey" json:"id"`
+	UserID      uint    `gorm:"index;not null" json:"user_id"`
+	BankID      uint    `gorm:"index;not null" json:"bank_id"`
+	Amount      float64 `gorm:"not null" json:"amount"`
+	Description string  `json:"description"`
+
+	TypeID uint            `gorm:"not null" json:"type_id"`
+	Type   TransactionType `gorm:"foreignKey:TypeID" json:"type"`
+
 	CategoryID uint     `gorm:"not null" json:"category_id"`
 	Category   Category `gorm:"foreignKey:CategoryID" json:"category"`
 
-	ContactID *uint    `json:"contact_id"` 
+	ContactID *uint    `json:"contact_id"`
 	Contact   *Contact `gorm:"foreignKey:ContactID" json:"contact"`
-	
-	CreatedAt  time.Time `json:"created_at"`
+
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type TransactionRepository interface {
